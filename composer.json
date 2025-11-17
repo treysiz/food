@@ -1,0 +1,7 @@
+{
+  "name": "food/cycle-display",
+  "description": "Restaurant Food Expiration Display System",
+  "require": {
+    "php": ">=8.0"
+  }
+}
