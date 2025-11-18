@@ -109,28 +109,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['food_admin'])) {
 }
 
 
-// 周期计算
+/// ---------- 周期计算函数（彻底修复 Deprecated 错误） ----------
 function get_cycle($start_date, $cycle_days) {
 
-    if (empty($start_date) || intval($cycle_days) <= 0) {
-        return ["from"=>"-", "to"=>"-", "left"=>0, "status"=>"expired"];
+    // ❗防止空值导致 strtotime(null) 报错
+    if (empty($start_date) || empty($cycle_days) || intval($cycle_days) <= 0) {
+        return [
+            "from"   => "-",
+            "to"     => "-",
+            "left"   => 0,
+            "status" => "expired"
+        ];
     }
 
     $start  = strtotime($start_date);
     $today  = strtotime(date("Y-m-d"));
-    $days   = max(0, floor(($today - $start) / 86400));
 
-    $cycle_index = floor($days / $cycle_days);
+    // ❗如果日期格式错误，也自动处理
+    if ($start === false) {
+        return [
+            "from"   => "-",
+            "to"     => "-",
+            "left"   => 0,
+            "status" => "expired"
+        ];
+    }
+
+    $days_passed = max(0, floor(($today - $start) / 86400));
+    $cycle_index = floor($days_passed / $cycle_days);
     $cycle_start = strtotime("+".($cycle_index * $cycle_days)." days", $start);
     $cycle_end   = strtotime("+".($cycle_days - 1)." days", $cycle_start);
-    $left        = floor(($cycle_end - $today) / 86400) + 1;
+    $days_left   = floor(($cycle_end - $today) / 86400) + 1;
 
-    if ($left <= 0) $status = "expired";
-    elseif ($left == 1) $status = "warning";
-    else $status = "normal";
+    if ($days_left <= 0) {
+        $status = "expired";
+    } elseif ($days_left == 1) {
+        $status = "warning";
+    } else {
+        $status = "normal";
+    }
 
-    return ["from"=>date("m-d",$cycle_start),"to"=>date("m-d",$cycle_end),"left"=>$left,"status"=>$status];
+    return [
+        "from"   => date("m-d", $cycle_start),
+        "to"     => date("m-d", $cycle_end),
+        "left"   => $days_left,
+        "status" => $status
+    ];
 }
+
 ?>
 <!DOCTYPE html>
 <html>
