@@ -102,21 +102,25 @@ function get_cycle($start_date, $cycle_days) {
 
 <!-- ===========================   食材卡片   =========================== -->
 <div class="grid">
-<?php if (empty($foods)): ?>
-    <div class="nodata">📂 暂无食材，请先添加</div>
-<?php endif; ?>
-
-<?php foreach ($foods as $f): 
+<?php foreach ($foods as $f):
     $c = get_cycle($f["start_date"], $f["cycle_days"]);
     $cls = ($c["left"]==0)? "expired" : (($c["left"]<=2)? "warning" : "normal");
 ?>
     <div class="card <?= $cls ?>">
+        <!-- 🔥 中文 -->
         <div class="name"><?= htmlspecialchars($f["name"]) ?></div>
+
+        <!-- 🔥 英文（如果有英文才显示） -->
+        <?php if (!empty($f["name_en"])): ?>
+            <div class="name-en"><?= htmlspecialchars($f["name_en"]) ?></div>
+        <?php endif; ?>
+
         <div class="date"><?= $c["from"] ?> ~ <?= $c["to"] ?></div>
         <div class="left"><?= $c["left"] > 0 ? "剩余：{$c["left"]} 天" : "⚠ 已过期" ?></div>
     </div>
 <?php endforeach; ?>
 </div>
+
 
 <!-- ===========================   后台管理区   =========================== -->
 <?php if (!$VIEW_ONLY): ?>
