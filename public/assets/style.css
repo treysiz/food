@@ -1,0 +1,38 @@
+body {
+    background: #111;
+    color: white;
+    font-family: Arial, "Microsoft YaHei";
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    padding: 20px;
+    border-radius: 14px;
+    text-align: center;
+    aspect-ratio: 1 / 1; /* 正方形 */
+}
+
+.card.normal { background: #1e3a1e; border: 3px solid #3BFF3B; }
+.card.warning { background: #3a2e00; border: 3px solid #FFE600; }
+.card.expired { background: #3a0000; border: 3px solid #FF3B3B; }
+
+.name { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
+.date { opacity: 0.7; }
+.left { font-size: 24px; margin-top: 12px; }
+
+.login-box, .admin-box { margin: 30px auto; width: 90%; max-width: 500px; }
+input, button { padding: 10px; width: 100%; margin-top: 8px; }
+
+.btn-danger { background: red; color: white; }
+.btn-logout { display:block; margin-top:20px; text-align:center; color:white; }
