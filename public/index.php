@@ -1,4 +1,4 @@
-<<?php
+<?php
 // ---------- 显示错误（调试白屏用） ----------
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -52,8 +52,8 @@ function get_cycle($start_date, $cycle_days) {
 
     $days_passed = max(0, floor(($today - $start) / 86400));
     $cycle_index = floor($days_passed / $cycle_days);
-    $cycle_start = strtotime("+".($cycle_index * $cycle_days)." days", $start);
-    $cycle_end = strtotime("+".($cycle_days - 1)." days", $cycle_start);
+    $cycle_start = strtotime("+" . ($cycle_index * $cycle_days) . " days", $start);
+    $cycle_end = strtotime("+" . ($cycle_days - 1) . " days", $cycle_start);
     $days_left = floor(($cycle_end - $today) / 86400) + 1;
 
     if ($days_left <= 0) $status = "expired";
@@ -81,19 +81,19 @@ function get_cycle($start_date, $cycle_days) {
         .warning { border-left:10px solid #ffcc00; }
         .expired { border-left:10px solid #ff3b30; }
         input, button { padding:10px; border-radius:5px; }
+        a { color:#4da3ff; }
     </style>
 </head>
 <body>
 
 <h1>食物周期显示系统</h1>
 <p>更新时间：<?= date("Y-m-d H:i:s") ?></p>
-
 <?php if ($VIEW_ONLY): ?>
     <?php
-    // 手机扫码进入后台设置
     $qr_link = "http://" . $_SERVER['HTTP_HOST'] . "/?view=0";
     $qr_url  = "https://chart.googleapis.com/chart?chs=280x280&cht=qr&chl=" . urlencode($qr_link);
     ?>
+
     <?php if(empty($foods)): ?>
         <h2>📁 暂无数据，请先添加食材！</h2>
     <?php endif; ?>
@@ -104,9 +104,8 @@ function get_cycle($start_date, $cycle_days) {
     </div>
 <?php endif; ?>
 
-<!-- ---------- 食材卡片显示 ---------- -->
 <?php foreach ($foods as $f): 
-    $c = get_cycle($f['start_date'], $f['cycle_days']); ?>
+      $c = get_cycle($f['start_date'], $f['cycle_days']); ?>
     <div class="card <?= $c['status'] ?>">
         <h2><?= htmlspecialchars($f['name']) ?></h2>
         <p>周期：<?= $c['from'] ?> ~ <?= $c['to'] ?></p>
@@ -114,14 +113,13 @@ function get_cycle($start_date, $cycle_days) {
     </div>
 <?php endforeach; ?>
 
-<!-- ---------- 后台设置 ---------- -->
 <?php if (!$VIEW_ONLY): ?>
     <hr>
     <h2>设置区（需密码）</h2>
 
     <?php if (!isset($_SESSION['food_admin'])): ?>
         <form method="post">
-            <input type="password" name="login_password" placeholder="请输入密码（默认888）">
+            <input type="password" name="login_password" placeholder="请输入密码（默认888）" required>
             <button>登录</button>
         </form>
     <?php else: ?>
@@ -132,7 +130,7 @@ function get_cycle($start_date, $cycle_days) {
             <input type="number" name="cycle_days" placeholder="天数" required>
             <button>添加</button>
         </form>
-        <p><a href="?logout=1" style="color:#ff3b30;">退出设置</a></p>
+        <p><a href="?logout=1">退出设置</a></p>
     <?php endif; ?>
 <?php endif; ?>
 
