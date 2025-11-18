@@ -1,5 +1,5 @@
 /* ===========================
-   餐厅风高端酒红背景
+   更紧凑布局 – 一屏最多 8 列
    =========================== */
 body {
     margin: 0;
@@ -7,70 +7,65 @@ body {
     color: #fff;
     font-family: "Microsoft YaHei", Arial, sans-serif;
     background: linear-gradient(135deg, #3a0d0d, #5e2a2a, #3a0d0d);
-    background-attachment: fixed;
 }
 
-/* ===========================
-   标题区
-   =========================== */
+/* 标题区 */
 .header {
     text-align: center;
-    padding: 30px 10px;
-}
-.header h1 {
-    font-size: 60px;
-    margin: 0;
-    color: #ffd700;
-}
-.header div {
-    margin-top: 10px;
-    opacity: 0.85;
-}
-
-/* ===========================
-   卡片正方形栅格布局
-   =========================== */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-    gap: 24px;
-    max-width: 1600px;
-    margin: auto;
     padding: 20px;
 }
+.header h1 {
+    margin: 0;
+    font-size: 56px;
+    color: #ffd700;
+}
+
+/* ✔ 新版卡片布局：小矩形 + 一排更多 */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));  /* 220px 正方形还能看清楚 */
+    gap: 16px;
+    padding: 10px 20px;
+    max-width: 2000px;
+    margin: auto;
+}
+
+/* 卡片样式 */
 .card {
+    padding: 18px;
+    border-radius: 18px;
+    aspect-ratio: 1 / 1.1; /* 正方形变成稍高矩形 */
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 30px;
-    aspect-ratio: 1 / 1; /* 正方形卡片 */
-    text-align: center;
-    font-size: 28px;
-    transition: all .25s;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: 0.2s;
 }
 .card:hover {
-    transform: scale(1.04);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    transform: scale(1.03);
 }
-.card.normal  { border: 6px solid #4caf50; }
-.card.warning { border: 6px solid #ff9800; }
-.card.expired { border: 6px solid #f44336; }
 
-.name  { font-size: 40px; font-weight: bold; margin-bottom: 10px; }
-.date  { font-size: 24px; opacity: 0.75; }
-.left  { font-size: 32px; margin-top: 16px; }
+.card.normal  { border: 4px solid #4CAF50; }
+.card.warning { border: 4px solid #FFC107; }
+.card.expired { border: 4px solid #F44336; }
 
-/* ===========================
-   后台管理区
-   =========================== */
-.login-box, .admin-box { 
-    max-width: 600px; 
-    margin: 40px auto; 
+/* 中英文双语显示 */
+.name {
+    font-size: 26px;
+    font-weight: bold;
+    color: #fff;
 }
-input, button {
-    padding: 12px;
-    margin-top: 10px;
-    width: 100%;
+.name-en {
+    font-size: 18px;
+    opacity: 0.7;
 }
-.btn-danger { background: red; color: white; }
-.btn-logout { text-align: center; display: block; margin-top: 20px; }
+
+/* 日期 & 剩余天数 */
+.date {
+    margin-top: 4px;
+    font-size: 18px;
+    opacity: 0.9;
+}
+.left {
+    margin-top: 8px;
+    font-size: 20px;
+    font-weight: bold;
+}
