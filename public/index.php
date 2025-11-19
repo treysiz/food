@@ -37,13 +37,17 @@ if (!$VIEW_ONLY && isset($_GET['logout'])) {
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
 
-    if ($action === "add") {
-        $foods[] = [
-            "name" => $_POST['name'],
-            "start_date" => $_POST['start_date'],
-            "cycle_days" => intval($_POST['cycle_days']),
-        ];
-    }
+   if ($action === "add") {
+    $foods[] = [
+        "name"  => $_POST['name'],
+        "name_en" => $_POST['name_en'] ?? "",
+        "category" => $_POST['category'] ?? "other",
+        "image_url" => $_POST['image_url'] ?? "",
+        "start_date" => $_POST['start_date'],
+        "cycle_days" => intval($_POST['cycle_days'])
+    ];
+}
+
 
     if ($action === "delete") {
         $i = intval($_POST['index']);
@@ -123,22 +127,33 @@ function get_cycle($start_date, $cycle_days) {
 
 
 <!-- ===========================   后台管理区   =========================== -->
-<?php if (!$VIEW_ONLY): ?>
-    <?php if (!isset($_SESSION['food_admin'])): ?>
-        <form method="post" class="login-box">
-            <input type="password" name="login_password" placeholder="输入密码进入后台">
-            <button>进入设置</button>
-        </form>
-    <?php else: ?>
-        <div class="admin-box">
-            <h2>🔧 添加食材</h2>
-            <form method="post">
-                <input type="hidden" name="action" value="add">
-                <input name="name" placeholder="食材名称" required>
-                <input type="date" name="start_date" required>
-                <input type="number" name="cycle_days" placeholder="周期天数" required>
-                <button>保存</button>
-            </form>
+<!-- ===========================   添加食材（升级版）   =========================== -->
+<?php if (!$VIEW_ONLY && isset($_SESSION['food_admin'])): ?>
+<div class="admin-box">
+    <h2>🔧 添加食材</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="add">
+
+        <input name="name" placeholder="中文名称" required>
+        <input name="name_en" placeholder="英文名称 (可空)">
+        
+        <select name="category" required>
+            <option value="">选择分类</option>
+            <option value="meat">🥩 肉类 meat</option>
+            <option value="vegetable">🥬 蔬菜 vegetable</option>
+            <option value="seafood">🐟 海鲜 seafood</option>
+            <option value="dairy">🥛 奶制品 dairy</option>
+        </select>
+
+        <input name="image_url" placeholder="图片地址 (可空)">
+        <input type="date" name="start_date" required>
+        <input type="number" name="cycle_days" placeholder="周期天数" required>
+
+        <button>保存</button>
+    </form>
+</div>
+<?php endif; ?>
+
 
             <h2>📋 当前食材</h2>
             <?php foreach ($foods as $i => $f): ?>
