@@ -53,15 +53,22 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
     exit;
 }
 
-// 🔥 计算周期
+// ---------------- 计算周期 ---------------------
 function get_cycle($start_date, $cycle_days) {
-    if (!$start_date || intval($cycle_days)<=0){
-        return ["from"=>"-","to"=>"-","left"=>0,"status"=>"normal"];
+    if (empty($start_date) || intval($cycle_days) <= 0) {
+        return ["from" => "-", "to" => "-", "left" => 0, "status" => "normal"];
     }
-    $s=strtotime($start_date); $t=strtotime(date("Y-m-d"));
-    $left=max(0, intval(($s+$cycle_days*86400-$t)/86400));
-    $cls=($left==0)? "expired":(($left<=2)? "warning":"normal");
-    return ["from"=>date("m-d",$s),"to"=>date("m-d",$s+$cycle_days*86400),"left"=>$left,"status"=>$cls];
+    $s = strtotime($start_date);
+    $t = strtotime(date("Y-m-d"));
+    $left = max(0, intval(($s + $cycle_days * 86400 - $t) / 86400));
+    $status = ($left == 0) ? "expired" : (($left <= 2) ? "warning" : "normal");
+
+    return [
+        "from"   => date("m-d", $s),
+        "to"     => date("m-d", $s + $cycle_days * 86400),
+        "left"   => $left,
+        "status" => $status
+    ];
 }
 ?>
 <!DOCTYPE html>
