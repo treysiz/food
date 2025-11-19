@@ -33,15 +33,15 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
     $action = $_POST['action'] ?? "";
 
     if ($action === "add") {
-        $foods[] = [
-            "name"       => $_POST['name'],
-            "name_en"    => $_POST['name_en"] ?? "",
-            "category"   => $_POST['category"] ?? "other",
-            "image_url"  => $_POST['image_url"] ?? "",
-            "start_date" => $_POST['start_date"],
-            "cycle_days" => intval($_POST['cycle_days"])
-        ];
-    }
+    $foods[] = [
+        "name"       => $_POST['name'],
+        "name_en"    => $_POST['name_en'] ?? "",          // 修复 ❗
+        "category"   => $_POST['category'] ?? "other",    // 修复 ❗
+        "image_url"  => $_POST['image_url'] ?? "",        // 修复 ❗
+        "start_date" => $_POST['start_date'],
+        "cycle_days" => intval($_POST['cycle_days'])
+    ];
+}
     if ($action === "delete") {
         $i = intval($_POST['index']);
         unset($foods[$i]);
