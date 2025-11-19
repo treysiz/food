@@ -1,0 +1,10 @@
+{
+    "warning_days": 3,
+    "expired_days": 7,
+    "auto_archive": true,
+    "notification_enabled": true,
+    "refresh_interval": 60,
+    "display_mode": "grid",
+    "language": "zh-CN",
+    "theme": "purple"
+}
