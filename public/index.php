@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <a href="?logout=1" class="btn-logout">退出设置</a>
         </div>
     <?php endif; ?>
-<?php endif; ?>
+
 
 </body>
 </html>
