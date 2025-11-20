@@ -4,8 +4,8 @@ ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 /* ==============================
-   📂 JSON 文件路径（Render 推荐）
-============================== */
+   🔒 JSON 永久存储路径（Render 推荐）
+   ============================== */
 $write_dir = "/opt/render/project/.data/";
 if (!is_dir($write_dir)) { $write_dir = __DIR__ . "/"; }
 define("JSON_FILE", $write_dir . "foods.json");
@@ -15,37 +15,8 @@ $VIEW_ONLY  = isset($_GET['view']);
 $REFRESH_SEC = 60;
 
 /* ==============================
-   🔧 GitHub API 配置
-============================== */
-$GITHUB_REPO  = getenv("GITHUB_REPO");      // yourname/repo
-$GITHUB_TOKEN = getenv("GITHUB_TOKEN");     // GitHub Token
-
-function backup_to_github($json_data) {
-    global $GITHUB_REPO, $GITHUB_TOKEN;
-    if (!$GITHUB_REPO || !$GITHUB_TOKEN) return;
-
-    $url = "https://api.github.com/repos/$GITHUB_REPO/contents/foods.json";
-    $data = [
-        "message" => "Auto backup JSON",
-        "content" => base64_encode($json_data)
-    ];
-
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: token $GITHUB_TOKEN",
-        "User-Agent: PHP-Backup"
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-    $res = curl_exec($ch);
-    curl_close($ch);
-}
-
-/* ==============================
    🧪 JSON 初始化
-============================== */
+   ============================== */
 if (!file_exists(JSON_FILE)) {
     file_put_contents(JSON_FILE, json_encode([], JSON_UNESCAPED_UNICODE));
 }
@@ -53,14 +24,14 @@ $foods = json_decode(file_get_contents(JSON_FILE), true) ?: [];
 
 /* ==============================
    🔐 登录处理
-============================== */
+   ============================== */
 if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") { $_SESSION['food_admin'] = true; }
 if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) { $_SESSION['food_admin'] = true; }
 if (!$VIEW_ONLY && isset($_GET['logout'])) { unset($_SESSION['food_admin']); header("Location: index.php"); exit; }
 
 /* ==============================
-   💾 保存食材 + GitHub 备份
-============================== */
+   💾 保存食材
+   ============================== */
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
 
@@ -75,25 +46,24 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
             "auto_renew" => false
         ];
     }
+
     if ($action === "toggle_renew") {
         $index = intval($_POST['index']);
         if (isset($foods[$index])) { $foods[$index]['auto_renew'] = !($foods[$index]['auto_renew'] ?? false); }
     }
+
     if ($action === "delete") {
         unset($foods[intval($_POST['index'])]);
         $foods = array_values($foods);
     }
 
-    $json_data = json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    file_put_contents(JSON_FILE, $json_data);
-    backup_to_github($json_data);   // 🚀 GitHub 自动备份！
-
+    file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     header("Location: index.php?saved=1");
     exit;
 }
 
 /* ==============================
-   📆 周期计算
+   📆 V4.5 显示优化
 ============================== */
 function get_cycle($start_date, $cycle_days, $auto_renew = false) {
     if (!$start_date || intval($cycle_days) <= 0) {
@@ -127,6 +97,7 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 <title>厨房食材管理系统 Kitchen Inventory System</title>
 <link rel="stylesheet" href="assets/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php if ($VIEW_ONLY): ?><meta http-equiv="refresh" content="<?= $REFRESH_SEC ?>"><?php endif; ?>
 </head>
 <body>
 
@@ -137,41 +108,84 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 </div>
 
 <?php if (isset($_GET['saved'])): ?>
-<div class="alert success">✔ 保存成功 / Saved & Backed up to GitHub</div>
+<div class="alert success">✔ 保存成功 / Saved</div>
 <?php endif; ?>
 
 <!-- 展示模式 -->
 <?php if ($VIEW_ONLY): ?>
 <div class="grid">
-<?php foreach ($foods as $i=>$f):
+<?php foreach ($foods as $i=>$f): 
     $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
-    <div class="card <?= $c['status'] ?>">
-        <div class="name"><b><?= $f["name"] ?></b> / <?= $f["name_en"] ?></div>
-        <div>周期 / Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?></div>
-        <div>Left: <?= $c["left"] ?> Days <?= $c["hours"] ?> Hours <?= $c["mins"] ?> Min</div>
-        <?= ($f["auto_renew"]?'🔄 自动续期中 / Auto ON':'⏸ 自动续期关 / Auto OFF') ?>
+    <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
+        <div class="name"><b><?= htmlspecialchars($f["name"]) ?></b> / <span class="en"><?= htmlspecialchars($f["name_en"]) ?></span></div>
+        <div class="date">周期 / Cycle: <b><?= $c["from"] ?> ~ <?= $c["to"] ?></b></div>
+        <div class="left">Remaining: <b><?= $c["left"] ?> Days <?= $c["hours"] ?> H <?= $c["mins"] ?> Min</b></div>
+        <?php if ($f['auto_renew'] ?? false): ?>
+            <div class="renew">🔄 Auto-Renew: ON</div>
+        <?php endif; ?>
     </div>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
-<!-- 登录 -->
 <?php if (!$VIEW_ONLY && !isset($_SESSION['food_admin'])): ?>
 <div class="login-box">
-    <h2>后台登录 / Admin Login</h2>
+    <h2>🔐 登录后台 / Admin Login</h2>
     <form method="post">
         <input name="login_password" type="password" placeholder="密码 Password: 888">
-        <button>Login</button>
+        <button>登录/Login</button>
     </form>
-    <p>📱 扫码进入后台 / Scan to Login</p>
-    <div id="qr"></div>
+
+    <!-- 🧾 修复二维码 -->
+    <p>📱 扫码登录 / Scan to Login</p>
+    <div id="qr-login"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        new QRCode(document.getElementById("qr"), {
+        new QRCode(document.getElementById("qr-login"), {
             text: "https://<?= $_SERVER['HTTP_HOST'] ?>/?admin=1",
-            width:180, height:180
+            width: 180,
+            height: 180
         });
     </script>
+</div>
+<?php endif; ?>
+
+<!-- 后台管理 -->
+<?php if (!$VIEW_ONLY && isset($_SESSION['food_admin'])): ?>
+<div class="admin-box">
+    <h2>📌 后台管理 / Admin Panel</h2>
+    <a href="?view=1" class="btn-link">🔍 展示模式 / View Mode</a>
+    <a href="?logout=1" class="btn-logout">退出 Logout</a>
+    <hr>
+
+    <h2>➕ 添加食材 / Add Food</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="add">
+        <input name="name" required placeholder="中文 Chinese Name">
+        <input name="name_en" placeholder="英文 English Name">
+        <select name="category">
+            <option value="meat">🥩 肉类 Meat</option>
+            <option value="vegetable">🥬 蔬菜 Veg</option>
+            <option value="seafood">🐟 海鲜 Seafood</option>
+            <option value="dairy">🥛 奶 Dairy</option>
+        </select>
+        <input name="image_url" placeholder="图片 URL / Image URL">
+        <input name="start_date" type="date" required>
+        <input name="cycle_days" type="number" placeholder="天数 Days">
+        <button>保存 / Save</button>
+    </form>
+
+    <h2>📋 当前食材 / Current List</h2>
+    <?php foreach ($foods as $i=>$f): ?>
+        <form method="post" style="margin-bottom:10px;">
+            <b><?= $i+1 ?>. <?= htmlspecialchars($f["name"]) ?></b>
+            <input type="hidden" name="index" value="<?= $i ?>">
+            <button name="action" value="delete">❌ 删除 / Delete</button>
+            <button name="action" value="toggle_renew" style="background:<?= ($f['auto_renew'] ?? false) ? '#4CAF50' : '#777' ?>;color:white;">
+                <?= ($f['auto_renew'] ?? false) ? '🟢 Auto-Renew ON' : '🔴 Auto-Renew OFF' ?>
+            </button>
+        </form>
+    <?php endforeach; ?>
 </div>
 <?php endif; ?>
 </body>
