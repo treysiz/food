@@ -3,7 +3,12 @@ session_start();
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-define("JSON_FILE", __DIR__ . "/foods.json");   // ✔ 这是 Render 当前有效路径！
+/* ===============================
+   🔒 JSON 文件路径：Render 可写目录
+   =============================== */
+$write_dir = is_writable("/opt/render/") ? "/opt/render/" : __DIR__;
+define("JSON_FILE", $write_dir . "foods.json");
+
 $PASSWORD = "888";
 $VIEW_ONLY = isset($_GET['view']);
 $REFRESH_SEC = 60;
@@ -47,7 +52,7 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
         $foods = array_values($foods);
     }
 
-    // ⚠ 写入 JSON 文件
+    // 写入 JSON 文件（永久保存，不丢失）
     file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     header("Location: index.php");
     exit;
