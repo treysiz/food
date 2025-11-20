@@ -8,8 +8,10 @@ $PASSWORD = "888";
 $VIEW_ONLY = isset($_GET['view']);
 $REFRESH_SEC = 60;
 
-// JSON Init
-if (!file_exists(JSON_FILE)) file_put_contents(JSON_FILE, json_encode([], JSON_UNESCAPED_UNICODE));
+// JSON 初始化
+if (!file_exists(JSON_FILE)) {
+    file_put_contents(JSON_FILE, json_encode([], JSON_UNESCAPED_UNICODE));
+}
 $foods = json_decode(file_get_contents(JSON_FILE), true) ?: [];
 
 // 登录处理
@@ -39,17 +41,19 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
             "cycle_days" => intval($_POST['cycle_days'])
         ];
     }
+
     if ($action === "delete") {
         unset($foods[intval($_POST['index'])]);
         $foods = array_values($foods);
     }
 
+    // ⚠ 写入 JSON 文件
     file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     header("Location: index.php");
     exit;
 }
 
-// ---------------- 计算周期 ---------------------
+// ---------------- 计算周期函数 ---------------------
 function get_cycle($start_date, $cycle_days) {
     if (empty($start_date) || intval($cycle_days) <= 0) {
         return ["from" => "-", "to" => "-", "left" => 0, "status" => "normal"];
@@ -71,10 +75,9 @@ function get_cycle($start_date, $cycle_days) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>厨房食材管理系统</title>
+<title>厨房食材管理系统 Kitchen Inventory System</title>
 <link rel="stylesheet" href="assets/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <?php if ($VIEW_ONLY): ?>
 <meta http-equiv="refresh" content="<?= $REFRESH_SEC ?>">
 <script>document.addEventListener("DOMContentLoaded",()=>{document.body.requestFullscreen?.();});</script>
@@ -85,10 +88,10 @@ function get_cycle($start_date, $cycle_days) {
 <!-- 顶部标题 -->
 <div class="header">
     <h1>🍽 厨房食材管理系统 <span class="en">Kitchen Inventory System</span></h1>
-    <div class="time">更新时间 / Updated At：<?= date("Y-m-d H:i:s") ?></div>
+    <div class="time">更新时间 / Updated：<?= date("Y-m-d H:i:s") ?></div>
 </div>
 
-<!-- 展示模式 -->
+<!-- 只展示 -->
 <?php if ($VIEW_ONLY): ?>
 <div class="category-tabs">
     <button onclick="filterCategory('all')">全部 All</button>
@@ -101,35 +104,24 @@ function get_cycle($start_date, $cycle_days) {
 <div class="grid">
 <?php foreach ($foods as $f):
 $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
-<div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
-    <?php if(!empty($f["image_url"])): ?>
-        <img src="<?= $f["image_url"] ?>" class="food-img">
-    <?php endif; ?>
-
-    <div class="name">
-        <?= htmlspecialchars($f["name"]) ?>
-        <?php if (!empty($f["name_en"])): ?>
-            <span class="en"> / <?= htmlspecialchars($f["name_en"]) ?></span>
+    <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
+        <?php if(!empty($f["image_url"])): ?>
+            <img src="<?= $f["image_url"] ?>" class="food-img">
         <?php endif; ?>
+        <div class="name"><?= htmlspecialchars($f["name"]) ?> 
+            <?php if (!empty($f["name_en"])): ?><span class="en"> / <?= htmlspecialchars($f["name_en"]) ?></span><?php endif; ?>
+        </div>
+        <div class="date">周期 / Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?></div>
+        <div class="left"><?= $c["left"]>0? "剩余 / Left：{$c["left"]} 天 Days":"⚠ 已过期 / Expired"; ?></div>
     </div>
-
-    <div class="date">
-        周期 Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?>
-    </div>
-
-    <div class="left">
-        <?= $c["left"]>0? "剩余 / Left：{$c["left"]} 天 Days":"⚠ 已过期 / Expired"; ?>
-    </div>
-</div>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
-<!-- 后台登录 -->
-<?php if (!$VIEW_ONLY): ?>
-<?php if (!isset($_SESSION['food_admin'])): ?>
+<!-- 后台：登录 -->
+<?php if (!$VIEW_ONLY && !isset($_SESSION['food_admin'])): ?>
 <div class="login-box">
-    <h2>🔒 后台管理登录</h2>
+    <h2>🔒 后台登录</h2>
     <form method="post">
         <input type="password" name="login_password" placeholder="输入密码 888">
         <button>登录</button>
@@ -146,10 +138,13 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
         });
     </script>
 </div>
-<?php else: ?>
+<?php endif; ?>
+
+<!-- 后台：已登录 -->
+<?php if (!$VIEW_ONLY && isset($_SESSION['food_admin'])): ?>
 <div class="admin-box">
-    <h2>📌 后台管理</h2>
-    <a href="?view=1" class="btn-link">切换厨房屏幕 / View Mode</a>
+    <h2>📌 后台管理系统</h2>
+    <a href="?view=1" class="btn-link">切换厨房模式</a>
     <a href="?logout=1" class="btn-logout">退出登录</a>
     <hr>
 
@@ -158,14 +153,19 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
         <input type="hidden" name="action" value="add">
         <input name="name" placeholder="中文名称" required>
         <input name="name_en" placeholder="英文名称 (可选)">
-        <input name="category" placeholder="分类 (meat/vegetable/seafood/dairy)">
+        <select name="category">
+            <option value="meat">肉类 Meat</option>
+            <option value="vegetable">蔬菜 Vegetable</option>
+            <option value="seafood">海鲜 Seafood</option>
+            <option value="dairy">奶制品 Dairy</option>
+        </select>
         <input name="image_url" placeholder="图片URL">
         <input type="date" name="start_date" required>
-        <input type="number" name="cycle_days" placeholder="周期天数">
+        <input type="number" name="cycle_days" placeholder="天数">
         <button>保存</button>
     </form>
 
-    <h2>📋 已有食材</h2>
+    <h2>📋 当前食材</h2>
     <?php foreach ($foods as $i => $f): ?>
         <form method="post" class="row-edit">
             <?= $i+1 ?>. <?= $f["name"] ?>（<?= $f["start_date"] ?>）
@@ -175,14 +175,14 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
-<?php endif; ?>
 
 <script>
 function filterCategory(c) {
     document.querySelectorAll('.card').forEach(el=>{
-        el.style.display = (c=='all' || el.dataset.category==c) ? 'block':'none';
+        el.style.display = (c=='all' || el.dataset.category==c) ? 'block' : 'none';
     });
 }
 </script>
+
 </body>
 </html>
