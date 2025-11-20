@@ -113,7 +113,7 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 
 <!-- 顶部 -->
 <div class="header">
-    <h1>🍽 厨房食材管理系统 <span class="en">Kitchen Inventory System</span></h1>
+    <h1>🍽 上海中餐馆厨房食材管理系统 <span class="en">SHANG HAI Kitchen Inventory System</span></h1>
     <div class="time">更新时间 / Updated：<?= date("Y-m-d H:i:s") ?></div>
 </div>
 
