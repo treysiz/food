@@ -101,7 +101,7 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>厨房食材管理系统 Kitchen Inventory System</title>
+<title>上海中餐馆厨房食材管理系统 SHANG HAI Kitchen Inventory System</title>
 <link rel="stylesheet" href="assets/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php if ($VIEW_ONLY): ?>
