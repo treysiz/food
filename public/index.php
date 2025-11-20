@@ -3,7 +3,7 @@ session_start();
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-define("JSON_FILE", __DIR__ . "/../data/foods.json");
+define("JSON_FILE", __DIR__ . "/foods.json");   // ✔ 这是 Render 当前有效路径！
 $PASSWORD = "888";
 $VIEW_ONLY = isset($_GET['view']);
 $REFRESH_SEC = 60;
