@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
@@ -25,12 +25,20 @@ $foods = json_decode(file_get_contents(JSON_FILE), true) ?: [];
 /* ==============================
    🔐 登录
    ============================== */
-if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") { $_SESSION['food_admin'] = true; }
-if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) { $_SESSION['food_admin'] = true; }
-if (!$VIEW_ONLY && isset($_GET['logout'])) { unset($_SESSION['food_admin']); header("Location: index.php"); exit; }
+if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") {
+    $_SESSION['food_admin'] = true;
+}
+if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) {
+    $_SESSION['food_admin'] = true;
+}
+if (!$VIEW_ONLY && isset($_GET['logout'])) {
+    unset($_SESSION['food_admin']);
+    header("Location: index.php");
+    exit;
+}
 
 /* ==============================
-   💾 保存数据
+   💾 保存数据（后台）
    ============================== */
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
@@ -49,7 +57,9 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
 
     if ($action === "toggle_renew") {
         $index = intval($_POST['index']);
-        if (isset($foods[$index])) { $foods[$index]['auto_renew'] = !($foods[$index]['auto_renew'] ?? false); }
+        if (isset($foods[$index])) {
+            $foods[$index]['auto_renew'] = !($foods[$index]['auto_renew'] ?? false);
+        }
     }
 
     if ($action === "delete") {
@@ -63,7 +73,7 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
 }
 
 /* ==============================
-   🧮 V4.2 周期（显示更好看，保留逻辑）
+   🧮 周期显示（英文格式显示）
    ============================== */
 function get_cycle($start_date, $cycle_days, $auto_renew = false) {
     if (!$start_date || intval($cycle_days) <= 0) {
@@ -109,24 +119,49 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 <div class="alert success">✔ 保存成功 / Data Saved</div>
 <?php endif; ?>
 
+<!-- 展示模式 -->
 <?php if ($VIEW_ONLY): ?>
 <div class="grid">
-<?php foreach ($foods as $i=>$f): 
+<?php foreach ($foods as $i=>$f):
     $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
-    <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
+    <div class="card <?= $c['status'] ?>">
         <div class="name"><b><?= htmlspecialchars($f["name"]) ?></b> / <span class="en"><?= htmlspecialchars($f["name_en"]) ?></span></div>
         <div class="date">周期 / Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?></div>
         <div class="left">剩余 / Left: <?= $c["left"] ?> Days <?= $c["hours"] ?> Hours <?= $c["mins"] ?> Min</div>
-
         <?php if ($f['auto_renew'] ?? false): ?>
-            <div class="renew">🔄 自动续期 开 / Auto-Renew ON</div>
-        <?php else: ?>
-            <div class="renew gray">⏸ 自动续期 关 / Auto-Renew OFF</div>
+            <div class="renew">🔄 自动续期 / Auto-Renew ON</div>
         <?php endif; ?>
     </div>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
+<!-- 登录 -->
+<?php if (!$VIEW_ONLY && !isset($_SESSION['food_admin'])): ?>
+<div class="login-box">
+    <h2>🔒 登录后台 / Admin Login</h2>
+    <form method="post"><input name="login_password" type="password" placeholder="密码 / Password"><button>登录/Login</button></form>
+    <p>📱 扫码登录 / Scan to Login</p>
+</div>
+<?php endif; ?>
+
+<!-- 后台管理 -->
+<?php if (!$VIEW_ONLY && isset($_SESSION['food_admin'])): ?>
+<div class="admin-box">
+    <h2>📌 后台管理 / Admin Panel</h2>
+    <a href="?view=1">👀 展示模式 / View Mode</a> | <a href="?logout=1">退出 / Logout</a>
+    <hr>
+
+    <h2>➕ 添加食材 / Add Item</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="add">
+        <input name="name" required placeholder="中文名称 / Chinese name">
+        <input name="name_en"  placeholder="英文名称 / English name">
+        <input name="start_date" type="date" required>
+        <input name="cycle_days" type="number" placeholder="天数 / Days">
+        <button>保存 / Save</button>
+    </form>
+</div>
+<?php endif; ?>
 </body>
 </html>
