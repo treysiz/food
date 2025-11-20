@@ -25,7 +25,7 @@ if (!$VIEW_ONLY && isset($_GET['logout'])) {
     exit;
 }
 
-// 保存食材
+// 保存数据
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
 
@@ -39,10 +39,8 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
             "cycle_days" => intval($_POST['cycle_days'])
         ];
     }
-
     if ($action === "delete") {
-        $i = intval($_POST['index']);
-        unset($foods[$i]);
+        unset($foods[intval($_POST['index'])]);
         $foods = array_values($foods);
     }
 
@@ -51,7 +49,7 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
     exit;
 }
 
-// 周期计算函数
+// ---------------- 计算周期 ---------------------
 function get_cycle($start_date, $cycle_days) {
     if (empty($start_date) || intval($cycle_days) <= 0) {
         return ["from" => "-", "to" => "-", "left" => 0, "status" => "normal"];
@@ -60,6 +58,7 @@ function get_cycle($start_date, $cycle_days) {
     $t = strtotime(date("Y-m-d"));
     $left = max(0, intval(($s + $cycle_days * 86400 - $t) / 86400));
     $status = ($left == 0) ? "expired" : (($left <= 2) ? "warning" : "normal");
+
     return [
         "from"   => date("m-d", $s),
         "to"     => date("m-d", $s + $cycle_days * 86400),
@@ -83,22 +82,21 @@ function get_cycle($start_date, $cycle_days) {
 </head>
 <body>
 
-<!-- 标题 -->
+<!-- 顶部标题 -->
 <div class="header">
-    <h1>🍽 厨房食材管理系统</h1>
-    <div>更新时间：<?= date("Y-m-d H:i:s") ?></div>
+    <h1>🍽 厨房食材管理系统 <span class="en">Kitchen Inventory System</span></h1>
+    <div class="time">更新时间 / Updated At：<?= date("Y-m-d H:i:s") ?></div>
 </div>
 
 <!-- 展示模式 -->
 <?php if ($VIEW_ONLY): ?>
 <div class="category-tabs">
-    <button onclick="filterCategory('all')">全部</button>
-    <button onclick="filterCategory('meat')">🥩 肉类</button>
-    <button onclick="filterCategory('vegetable')">🥬 蔬菜</button>
-    <button onclick="filterCategory('seafood')">🐟 海鲜</button>
-    <button onclick="filterCategory('dairy')">🥛 奶制品</button>
+    <button onclick="filterCategory('all')">全部 All</button>
+    <button onclick="filterCategory('meat')">🥩 肉类 Meat</button>
+    <button onclick="filterCategory('vegetable')">🥬 蔬菜 Vegetable</button>
+    <button onclick="filterCategory('seafood')">🐟 海鲜 Seafood</button>
+    <button onclick="filterCategory('dairy')">🥛 奶制品 Dairy</button>
 </div>
-<?php endif; ?>
 
 <div class="grid">
 <?php foreach ($foods as $f):
@@ -107,20 +105,29 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
     <?php if(!empty($f["image_url"])): ?>
         <img src="<?= $f["image_url"] ?>" class="food-img">
     <?php endif; ?>
-    <div class="name"><?= htmlspecialchars($f["name"]) ?></div>
-    <?php if (!empty($f["name_en"])): ?>
-        <div class="name-en"><?= htmlspecialchars($f["name_en"]) ?></div>
-    <?php endif; ?>
-    <div class="date"><?= $c["from"] ?> ~ <?= $c["to"] ?></div>
-    <div class="left"><?= $c["left"]>0? "剩余：{$c["left"]} 天":"⚠ 已过期"; ?></div>
+
+    <div class="name">
+        <?= htmlspecialchars($f["name"]) ?>
+        <?php if (!empty($f["name_en"])): ?>
+            <span class="en"> / <?= htmlspecialchars($f["name_en"]) ?></span>
+        <?php endif; ?>
+    </div>
+
+    <div class="date">
+        周期 Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?>
+    </div>
+
+    <div class="left">
+        <?= $c["left"]>0? "剩余 / Left：{$c["left"]} 天 Days":"⚠ 已过期 / Expired"; ?>
+    </div>
 </div>
 <?php endforeach; ?>
 </div>
+<?php endif; ?>
 
-
+<!-- 后台登录 -->
 <?php if (!$VIEW_ONLY): ?>
 <?php if (!isset($_SESSION['food_admin'])): ?>
-<!-- 未登录：显示登录 + 二维码 -->
 <div class="login-box">
     <h2>🔒 后台管理登录</h2>
     <form method="post">
@@ -128,23 +135,21 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
         <button>登录</button>
     </form>
 
-    <p>📱 手机扫码快速登录后台：</p>
+    <p>📱 手机扫码登录后台：</p>
     <div id="qr-login"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         new QRCode(document.getElementById("qr-login"), {
-            text: "https://food-ndj6.onrender.com/?admin=1",
+            text: "https://<?= $_SERVER['HTTP_HOST'] ?>/?admin=1",
             width: 180,
             height: 180
         });
     </script>
 </div>
-
 <?php else: ?>
-<!-- 已登录后台 -->
 <div class="admin-box">
-    <h2>📌 当前后台登录成功</h2>
-    <a href="?view=1" class="btn-link">切换到厨房展示屏模式</a>
+    <h2>📌 后台管理</h2>
+    <a href="?view=1" class="btn-link">切换厨房屏幕 / View Mode</a>
     <a href="?logout=1" class="btn-logout">退出登录</a>
     <hr>
 
@@ -152,7 +157,8 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
     <form method="post">
         <input type="hidden" name="action" value="add">
         <input name="name" placeholder="中文名称" required>
-        <input name="name_en" placeholder="英文名称">
+        <input name="name_en" placeholder="英文名称 (可选)">
+        <input name="category" placeholder="分类 (meat/vegetable/seafood/dairy)">
         <input name="image_url" placeholder="图片URL">
         <input type="date" name="start_date" required>
         <input type="number" name="cycle_days" placeholder="周期天数">
@@ -170,7 +176,6 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
 </div>
 <?php endif; ?>
 <?php endif; ?>
-
 
 <script>
 function filterCategory(c) {
