@@ -40,10 +40,7 @@ if (!$VIEW_ONLY && isset($_GET['logout'])) {
     exit;
 }
 
-
-/* ==============================
-   💾  保存食材（写入 JSON）
-   ============================== */
+// 保存食材（写入 JSON）
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
 
@@ -52,9 +49,9 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
             "name"       => $_POST['name'],
             "name_en"    => $_POST['name_en'] ?? "",
             "category"   => $_POST['category'] ?? "other",
-            "image_url"  => $_POST['image_url'] ?? "",   // ← FIXED 引号错误！
+            "image_url"  => $_POST['image_url'] ?? "",
             "start_date" => $_POST['start_date'],
-            "cycle_days" => intval($_POST['cycle_days'])
+            "cycle_days" => intval($_POST['cycle_days']),
         ];
     }
 
@@ -63,6 +60,19 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
         $foods = array_values($foods);
     }
 
+    // ✔ 写入 JSON 文件 (永久存储)
+    file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+    // 🔁 复制一份到公开目录 /var/www/html/foods.json
+    copy(JSON_FILE, __DIR__ . "/foods.json");
+
+    // 🔍 可见写入信息（调试用，确认成功后可删除）
+    $bytes = filesize(JSON_FILE);
+    echo "<div style='color:green'>✔ 写入成功!<br>JSON路径: " . JSON_FILE . "<br>写入字节: $bytes</div>";
+
+    header("Location: index.php?saved=1");
+    exit;
+}
     // 🔥 写 JSON（成功返回写入字节数，可 debug）
     $res = file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     
