@@ -9,7 +9,7 @@ $VIEW_ONLY = isset($_GET['view']);
 $REFRESH_SEC = 60;
 
 // 🔥 载入二维码库
-require_once __DIR__ . "/lib/phpqrcode/qrlib.php";
+require_once realpath(__DIR__ . "/lib/phpqrcode/qrlib.php");
 
 // JSON Init
 if (!file_exists(JSON_FILE)) file_put_contents(JSON_FILE, json_encode([], JSON_UNESCAPED_UNICODE));
@@ -135,9 +135,16 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
     <!-- 🔥 生成二维码 -->
     <p>📱 手机扫码快速登录后台：</p>
     <?php
-        $login_url = "https://" . $_SERVER['HTTP_HOST'] . "/?admin=1";
-        QRcode::png($login_url, false, QR_ECLEVEL_L, 8);
-    ?>
+// 生成手机扫码登录二维码
+$login_url = "https://" . $_SERVER['HTTP_HOST'] . "/?admin=1";
+
+ob_clean();                             // 防止输出 HTML
+header("Content-Type: image/png");     // 告诉浏览器这是图片
+
+QRcode::png($login_url, false, QR_ECLEVEL_L, 8);  // 生成二维码
+exit;                                     // 避免继续输出 HTML
+?>
+
 </div>
 
 <?php else: ?>
