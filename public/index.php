@@ -7,9 +7,7 @@ error_reporting(E_ALL);
    🔒 JSON 永久存储路径（Render 推荐）
    ============================== */
 $write_dir = "/opt/render/project/.data/";  // Render 最安全的写入目录
-if (!is_dir($write_dir)) {
-    $write_dir = __DIR__ . "/";
-}
+if (!is_dir($write_dir)) { $write_dir = __DIR__ . "/"; }
 define("JSON_FILE", $write_dir . "foods.json");
 
 $PASSWORD   = "888";
@@ -28,17 +26,9 @@ $foods = json_decode(file_get_contents(JSON_FILE), true) ?: [];
 /* ==============================
    🔐 登录处理
    ============================== */
-if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") {
-    $_SESSION['food_admin'] = true;
-}
-if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) {
-    $_SESSION['food_admin'] = true;
-}
-if (!$VIEW_ONLY && isset($_GET['logout'])) {
-    unset($_SESSION['food_admin']);
-    header("Location: index.php");
-    exit;
-}
+if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") { $_SESSION['food_admin'] = true; }
+if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) { $_SESSION['food_admin'] = true; }
+if (!$VIEW_ONLY && isset($_GET['logout'])) { unset($_SESSION['food_admin']); header("Location: index.php"); exit; }
 
 
 /* ==============================
@@ -54,8 +44,17 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
             "category"   => $_POST['category'] ?? "other",
             "image_url"  => $_POST['image_url'] ?? "",
             "start_date" => $_POST['start_date'],
-            "cycle_days" => intval($_POST['cycle_days'])
+            "cycle_days" => intval($_POST['cycle_days']),
+            "auto_renew" => false  // V4 默认关闭
         ];
+    }
+
+    // V4 🆕 自动续期开关
+    if ($action === "toggle_renew") {
+        $index = intval($_POST['index']);
+        if (isset($foods[$index])) {
+            $foods[$index]['auto_renew'] = !($foods[$index]['auto_renew'] ?? false);
+        }
     }
 
     if ($action === "delete") {
@@ -63,7 +62,6 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
         $foods = array_values($foods);
     }
 
-    // 🔥 写 JSON（永久保存）
     $res = file_put_contents(JSON_FILE, json_encode($foods, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     header("Location: index.php?saved={$res}");
     exit;
@@ -71,34 +69,31 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
 
 
 /* ==============================
-   📆 V3 升级：周期计算 + 自动续期 + 精确时间
+   📆 V4 升级：周期计算 + 自动续期 + 精确时间
    ============================== */
-function get_cycle($start_date, $cycle_days) {
+function get_cycle($start_date, $cycle_days, $auto_renew = false) {
     if (!$start_date || intval($cycle_days) <= 0) {
         return ["from" => "-", "to" => "-", "left" => 0, "hours" => 0, "mins" => 0, "status" => "normal"];
     }
+
     $s = strtotime($start_date);
     $end = $s + $cycle_days * 86400;
     $seconds_left = max(0, $end - time());
 
-    // 自动续期：周期结束 → 立即开始新的周期
-    if ($seconds_left <= 0 && intval($cycle_days) > 0) {
-        $s = strtotime(date("Y-m-d"));  
+    // 🆕 自动续期仅在 auto_renew = true 时执行
+    if ($seconds_left <= 0 && $auto_renew) {
+        $s = strtotime(date("Y-m-d H:i"));
         $end = $s + $cycle_days * 86400;
         $seconds_left = $end - time();
     }
 
-    $days  = floor($seconds_left / 86400);
-    $hours = floor(($seconds_left % 86400) / 3600);
-    $mins  = floor(($seconds_left % 3600) / 60);
-
     return [
         "from"  => date("m-d H:i", $s),
         "to"    => date("m-d H:i", $end),
-        "left"  => $days,
-        "hours" => $hours,
-        "mins"  => $mins,
-        "status" => ($seconds_left <= 0 ? "expired" : ($days <= 2 ? "warning" : "normal"))
+        "left"  => floor($seconds_left / 86400),
+        "hours" => floor(($seconds_left % 86400) / 3600),
+        "mins"  => floor(($seconds_left % 3600) / 60),
+        "status" => ($seconds_left <= 0 ? "expired" : ((floor($seconds_left / 86400) <= 2) ? "warning" : "normal"))
     ];
 }
 ?>
@@ -122,7 +117,6 @@ function get_cycle($start_date, $cycle_days) {
     <div class="time">更新时间 / Updated：<?= date("Y-m-d H:i:s") ?></div>
 </div>
 
-<!-- JSON 写入测试显示 -->
 <?php if (isset($_GET['saved'])): ?>
 <div class="alert success">✔ 食材保存成功（写入字节：<?= $_GET['saved'] ?>）</div>
 <?php endif; ?>
@@ -139,37 +133,25 @@ function get_cycle($start_date, $cycle_days) {
 </div>
 
 <div class="grid">
-<?php foreach ($foods as $f): 
-    $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
+<?php foreach ($foods as $i=>$f):
+    $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
     <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
-        <?php if ($f["image_url"]): ?>
-            <img src="<?= $f["image_url"] ?>" class="food-img">
-        <?php endif; ?>
-
-        <div class="name"><?= htmlspecialchars($f["name"]) ?> 
-            <?php if ($f["name_en"]): ?><span class="en"> / <?= htmlspecialchars($f["name_en"]) ?></span><?php endif; ?>
-        </div>
+        <?php if ($f["image_url"]): ?><img src="<?= $f["image_url"] ?>" class="food-img"><?php endif; ?>
+        <div class="name"><?= htmlspecialchars($f["name"]) ?> <?php if ($f["name_en"]): ?><span class="en"> / <?= htmlspecialchars($f["name_en"]) ?></span><?php endif; ?></div>
         <div class="date">周期：<?= $c["from"] ?> ~ <?= $c["to"] ?></div>
-        <div class="left">
-            <?php if ($c["left"] > 0): ?>
-                剩余：<?= $c["left"] ?> 天 <?= $c["hours"] ?> 时 <?= $c["mins"] ?> 分
-            <?php else: ?>
-                ⚠ 已自动续期（新开始：<?= $c["from"] ?>）
-            <?php endif; ?>
-        </div>
+        <div class="left">剩余：<?= $c["left"] ?> 天 <?= $c["hours"] ?> 时 <?= $c["mins"] ?> 分</div>
+        <?php if ($f['auto_renew'] ?? false): ?><div class="renew">🔄 自动续期中</div><?php endif; ?>
     </div>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
 
-<!-- 登录页面 -->
+<!-- 登录 -->
 <?php if (!$VIEW_ONLY && !isset($_SESSION['food_admin'])): ?>
 <div class="login-box">
     <h2>🔒 后台登录</h2>
-    <form method="post">
-        <input name="login_password" type="password" placeholder="输入密码 888"><button>登录</button>
-    </form>
+    <form method="post"><input name="login_password" type="password" placeholder="输入密码 888"><button>登录</button></form>
     <p>📱 手机扫码登录后台</p>
     <div id="qr-login"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -190,12 +172,10 @@ function get_cycle($start_date, $cycle_days) {
     <form method="post">
         <input type="hidden" name="action" value="add">
         <input name="name" required placeholder="中文名称">
-        <input name="name_en" placeholder="英文名称 (可选)">
+        <input name="name_en"  placeholder="英文名称 (可选)">
         <select name="category">
-            <option value="meat">肉类 Meat</option>
-            <option value="vegetable">蔬菜 Vegetable</option>
-            <option value="seafood">海鲜 Seafood</option>
-            <option value="dairy">奶制品 Dairy</option>
+            <option value="meat">肉类 Meat</option><option value="vegetable">蔬菜 Vegetable</option>
+            <option value="seafood">海鲜 Seafood</option><option value="dairy">奶制品 Dairy</option>
         </select>
         <input name="image_url" placeholder="图片 URL">
         <input name="start_date" type="date" required>
@@ -204,22 +184,24 @@ function get_cycle($start_date, $cycle_days) {
     </form>
 
     <h2>📋 当前食材</h2>
-    <?php foreach ($foods as $i=>$f): ?>
-        <form method="post">
-            <?= $i+1 ?>. <?= htmlspecialchars($f["name"]) ?> (<?= $f["start_date"] ?>)
+    <?php foreach ($foods as $i=>$f): $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
+        <form method="post" style="margin-bottom:10px;">
+            <b><?= $i+1 ?>. <?= htmlspecialchars($f["name"]) ?></b> （<?= $f["start_date"] ?>）<br>
             <input type="hidden" name="index" value="<?= $i ?>">
-            <button name="action" value="delete">删除</button>
+            <button name="action" value="delete">❌ 删除</button>
+
+            <!-- 🆕 自动续期开关按钮 -->
+            <button name="action" value="toggle_renew" style="background:<?= ($f['auto_renew'] ?? false) ? '#4CAF50' : '#777' ?>;color:white;">
+                <?= ($f['auto_renew'] ?? false) ? '🟢 自动续期：开启' : '🔴 自动续期：关闭' ?>
+            </button>
         </form>
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
+
 <script>
-function filterCategory(c) {
-    document.querySelectorAll('.card').forEach(el=>{
-        el.style.display = (c=='all'||el.dataset.category==c)?'block':'none';
-    });
-}
+function filterCategory(c){ document.querySelectorAll('.card').forEach(el=>{ el.style.display = (c=='all'||el.dataset.category==c)?'block':'none';}); }
 </script>
 </body>
 </html>
