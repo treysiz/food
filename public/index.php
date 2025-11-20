@@ -23,14 +23,14 @@ if (!file_exists(JSON_FILE)) {
 $foods = json_decode(file_get_contents(JSON_FILE), true) ?: [];
 
 /* ==============================
-   🔐 登录
+   🔐 登录处理
    ============================== */
 if (!$VIEW_ONLY && isset($_GET['admin']) && $_GET['admin'] == "1") { $_SESSION['food_admin'] = true; }
 if (!$VIEW_ONLY && isset($_POST['login_password']) && $_POST['login_password'] === $PASSWORD) { $_SESSION['food_admin'] = true; }
 if (!$VIEW_ONLY && isset($_GET['logout'])) { unset($_SESSION['food_admin']); header("Location: index.php"); exit; }
 
 /* ==============================
-   💾 保存数据
+   💾 保存食材
    ============================== */
 if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? "";
@@ -63,12 +63,13 @@ if (!$VIEW_ONLY && isset($_SESSION['food_admin']) && $_SERVER['REQUEST_METHOD'] 
 }
 
 /* ==============================
-   🧮 V4.2 周期（显示更好看，保留逻辑）
+   📆 V4.1 升级：更好看显示格式
    ============================== */
 function get_cycle($start_date, $cycle_days, $auto_renew = false) {
     if (!$start_date || intval($cycle_days) <= 0) {
         return ["from" => "-", "to" => "-", "left" => 0, "hours" => 0, "mins" => 0, "status" => "normal"];
     }
+
     $s = strtotime($start_date);
     $end = $s + $cycle_days * 86400;
     $seconds_left = max(0, $end - time());
@@ -96,7 +97,9 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 <title>厨房食材管理系统 Kitchen Inventory System</title>
 <link rel="stylesheet" href="assets/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<?php if ($VIEW_ONLY): ?><meta http-equiv="refresh" content="<?= $REFRESH_SEC ?>"><?php endif; ?>
+<?php if ($VIEW_ONLY): ?>
+<meta http-equiv="refresh" content="<?= $REFRESH_SEC ?>">
+<?php endif; ?>
 </head>
 <body>
 
@@ -106,27 +109,82 @@ function get_cycle($start_date, $cycle_days, $auto_renew = false) {
 </div>
 
 <?php if (isset($_GET['saved'])): ?>
-<div class="alert success">✔ 保存成功 / Data Saved</div>
+<div class="alert success">✔ 保存成功 Saved</div>
 <?php endif; ?>
 
 <?php if ($VIEW_ONLY): ?>
-<div class="grid">
-<?php foreach ($foods as $i=>$f): 
-    $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
-    <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
-        <div class="name"><b><?= htmlspecialchars($f["name"]) ?></b> / <span class="en"><?= htmlspecialchars($f["name_en"]) ?></span></div>
-        <div class="date">周期 / Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?></div>
-        <div class="left">剩余 / Left: <?= $c["left"] ?> Days <?= $c["hours"] ?> Hours <?= $c["mins"] ?> Min</div>
+<div class="category-tabs">
+    <button onclick="filterCategory('all')">全部 All</button>
+    <button onclick="filterCategory('meat')">🥩 肉类 Meat</button>
+    <button onclick="filterCategory('vegetable')">🥬 蔬菜 Veg</button>
+    <button onclick="filterCategory('seafood')">🐟 海鲜 Seafood</button>
+    <button onclick="filterCategory('dairy')">🥛 奶 Dairy</button>
+</div>
 
-        <?php if ($f['auto_renew'] ?? false): ?>
-            <div class="renew">🔄 自动续期 开 / Auto-Renew ON</div>
-        <?php else: ?>
-            <div class="renew gray">⏸ 自动续期 关 / Auto-Renew OFF</div>
-        <?php endif; ?>
+<div class="grid">
+<?php foreach ($foods as $i=>$f): $c = get_cycle($f["start_date"], $f["cycle_days"], $f["auto_renew"] ?? false); ?>
+    <div class="card <?= $c['status'] ?>" data-category="<?= $f['category'] ?>">
+        <?php if ($f["image_url"]): ?><img src="<?= $f["image_url"] ?>" class="food-img"><?php endif; ?>
+        <div class="name"><b><?= htmlspecialchars($f["name"]) ?></b> <span class="en">/ <?= htmlspecialchars($f["name_en"] ?? "") ?></span></div>
+        <div class="date">周期 / Cycle: <?= $c["from"] ?> ~ <?= $c["to"] ?></div>
+        <div class="left">Left: <?= $c["left"] ?> Days <?= $c["hours"] ?> Hours <?= $c["mins"] ?> Min</div>
+        <?php if ($f['auto_renew'] ?? false): ?><div class="renew">🔄 自动续期中 / Auto-Renew ON</div><?php endif; ?>
     </div>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
+<?php if (!$VIEW_ONLY && !isset($_SESSION['food_admin'])): ?>
+<div class="login-box">
+    <h2>后台登录 / Admin Login</h2>
+    <form method="post"><input name="login_password" type="password" placeholder="密码 Password: 888"><button>Login</button></form>
+</div>
+<?php endif; ?>
+
+<?php if (!$VIEW_ONLY && isset($_SESSION['food_admin'])): ?>
+<div class="admin-box">
+    <h2>📌 后台管理 / Admin Panel</h2>
+    <a href="?view=1" class="btn-link">🔍 展示模式 / View Mode</a>
+    <a href="?logout=1" class="btn-logout">退出 Logout</a>
+    <hr>
+
+    <h2>➕ 添加食材 / Add Food</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="add">
+        <input name="name" required placeholder="中文名称 Chinese Name">
+        <input name="name_en" placeholder="英文名称 English Name">
+        <select name="category">
+            <option value="meat">肉类 Meat</option>
+            <option value="vegetable">蔬菜 Veg</option>
+            <option value="seafood">海鲜 Seafood</option>
+            <option value="dairy">奶 Dairy</option>
+        </select>
+        <input name="image_url" placeholder="图片 URL / Image URL">
+        <input name="start_date" type="date" required>
+        <input name="cycle_days" type="number" placeholder="天数 Days">
+        <button>保存 Save</button>
+    </form>
+
+    <h2>📋 当前食材 / Current List</h2>
+    <?php foreach ($foods as $i=>$f): ?>
+        <form method="post">
+            <b><?= $i+1 ?>. <?= htmlspecialchars($f["name"]) ?></b>
+            <input type="hidden" name="index" value="<?= $i ?>">
+            <button name="action" value="delete">❌ 删除 / Delete</button>
+            <button name="action" value="toggle_renew">
+                <?= ($f['auto_renew'] ?? false) ? '🟢 Auto-Renew ON' : '🔴 Auto-Renew OFF' ?>
+            </button>
+        </form>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
+<script>
+function filterCategory(c){
+    document.querySelectorAll('.card').forEach(el=>{
+        el.style.display=(c==='all'||el.dataset.category===c)?'block':'none';
+    });
+}
+</script>
 </body>
 </html>
