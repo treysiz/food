@@ -3,7 +3,7 @@ session_start();
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-define("JSON_FILE", __DIR__ . "/foods.json");
+define("JSON_FILE", __DIR__ . "/public/foods.json");
 $PASSWORD = "888";
 $VIEW_ONLY = isset($_GET['view']);
 $REFRESH_SEC = 60;
