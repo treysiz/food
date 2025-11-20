@@ -134,10 +134,17 @@ $c = get_cycle($f["start_date"], $f["cycle_days"]); ?>
 
     <!-- 🔥 生成二维码 -->
     <p>📱 手机扫码快速登录后台：</p>
-<img src="qr.php" style="width:180px;">
-</div>
+<div id="qr-login"></div>
 
-<?php else: ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    new QRCode(document.getElementById("qr-login"), {
+        text: "https://food-ndj6.onrender.com/?admin=1",
+        width: 180,
+        height: 180
+    });
+</script>
+
 <!-- 已登录，显示后台 -->
 <div class="admin-box">
     <h2>📌 当前后台登录成功</h2>
