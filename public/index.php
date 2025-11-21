@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 /* ==============================
    🛑 V5 – GitHub 设置（需要你替换）
 ============================== */
-$GITHUB_RAW_URL = "https://raw.githubusercontent.com/treysiz/food/main/public/foods.json; // 必须改成你自己的
+$GITHUB_RAW_URL = $GITHUB_RAW_URL = "https://raw.githubusercontent.com/treysiz/food/main/public/foods.json"; // 必须改成你自己的
 
 /* ==============================
    🔒 JSON 永久存储路径（Render 推荐）
