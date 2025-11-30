@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: food-cycle-display
-    env: php
-    buildCommand: "composer install"
-    startCommand: "php -S 0.0.0.0:10000 -t public"
-    plan: free
