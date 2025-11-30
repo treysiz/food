@@ -1,99 +1,77 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>宫宝汁 / Salsa Kung Pao</title>
+
 <style>
     body {
         margin: 0;
         display: flex;
+        width: 1920px;         /* 🔥 强制横屏宽度 */
+        height: 1080px;        /* 🔥 保证电视适配 */
+        overflow: hidden;      /* 🔥 防止重叠溢出 */
         font-family: Arial, sans-serif;
-        height: 100vh;
     }
 
-    /* ===== 左边中文 ===== */
-    .col-cn {
+    .col {
         width: 50%;
         padding: 40px;
-        font-size: 2.6rem;  /* 中文稍微大一点 */
     }
 
-    /* ===== 右边西班牙文 ===== */
-    .col-es {
-        width: 50%;
-        padding: 40px;
-        font-size: 2.2rem;   /* 西班牙文缩小一点 */
-        line-height: 1.3;
-    }
+    .title-cn { font-size: 4rem; text-align: center; }
+    .title-es { font-size: 3.4rem; text-align: center; }
 
-    h1 {
-        text-align: center;
-        margin-top: 0;
-    }
-    .item {
-        margin: 20px 0;
-    }
+    .item { margin: 20px 0; }
+    .row { display: flex; align-items: center; }
 
-    .row {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
+    .name { width: 40%; min-width: 200px; white-space: nowrap; }
+    .line { flex: 1; border-bottom: 3px solid black; margin: 0 15px; }
+    .qty { width: 20%; text-align: right; white-space: nowrap; }
 
-    /* 左名称 */
-    .row span:first-child {
-        width: 28%;
-        min-width: 180px;
-        white-space: nowrap;
+    /* 🔥 自动适配缩放（竖屏手机不会挤爆）*/
+    @media screen and (max-width: 1200px) {
+        body { transform: scale(0.5); transform-origin: top left; }
     }
-
-    /* 右用量 */
-    .row span:last-child {
-        width: 20%;
-        min-width: 120px;
-        text-align: right;
-        white-space: nowrap;
-    }
-
-    /* 横线 */
-    .line {
-        flex: 1;
-        border-bottom: 3px solid black;
-        margin: 0 10px;
+    @media screen and (max-width: 800px) {
+        body { transform: scale(0.4); transform-origin: top left; }
     }
 </style>
 </head>
 <body>
 
 <!-- ===== 中文区 ===== -->
-<div class="col-cn">
-  <h1>宫宝汁</h1>
-  <div class="item"><div class="row"><span>金标酱油</span><div class="line"></div><span>2罐</span></div></div>
-  <div class="item"><div class="row"><span>蚝油</span><div class="line"></div><span>1罐</span></div></div>
-  <div class="item"><div class="row"><span>海鲜酱</span><div class="line"></div><span>2勺</span></div></div>
-  <div class="item"><div class="row"><span>番茄酱</span><div class="line"></div><span>4勺</span></div></div>
-  <div class="item"><div class="row"><span>万字</span><div class="line"></div><span>1pot</span></div></div>
-  <div class="item"><div class="row"><span>草菇老抽</span><div class="line"></div><span>2勺</span></div></div>
-  <div class="item"><div class="row"><span>糖</span><div class="line"></div><span>2pot</span></div></div>
-  <div class="item"><div class="row"><span>味精</span><div class="line"></div><span>4勺</span></div></div>
-  <div class="item"><div class="row"><span>鸡精</span><div class="line"></div><span>半勺</span></div></div>
-  <div class="item"><div class="row"><span>酒</span><div class="line"></div><span>3勺</span></div></div>
+<div class="col">
+  <h1 class="title-cn">宫宝汁</h1>
+
+  <div class="item"><div class="row"><span class="name">金标酱油</span><div class="line"></div><span class="qty">2罐</span></div></div>
+  <div class="item"><div class="row"><span class="name">蚝油</span><div class="line"></div><span class="qty">1罐</span></div></div>
+  <div class="item"><div class="row"><span class="name">海鲜酱</span><div class="line"></div><span class="qty">2勺</span></div></div>
+  <div class="item"><div class="row"><span class="name">番茄酱</span><div class="line"></div><span class="qty">4勺</span></div></div>
+  <div class="item"><div class="row"><span class="name">万字</span><div class="line"></div><span class="qty">1pot</span></div></div>
+  <div class="item"><div class="row"><span class="name">草菇老抽</span><div class="line"></div><span class="qty">2勺</span></div></div>
+  <div class="item"><div class="row"><span class="name">糖</span><div class="line"></div><span class="qty">2pot</span></div></div>
+  <div class="item"><div class="row"><span class="name">味精</span><div class="line"></div><span class="qty">4勺</span></div></div>
+  <div class="item"><div class="row"><span class="name">鸡精</span><div class="line"></div><span class="qty">半勺</span></div></div>
+  <div class="item"><div class="row"><span class="name">酒</span><div class="line"></div><span class="qty">3勺</span></div></div>
 </div>
 
 <!-- ===== 西班牙文区 ===== -->
-<div class="col-es">
-  <h1>Salsa Kung Pao</h1>
-  <div class="item"><div class="row"><span>Salsa de soja dorada</span><div class="line"></div><span>2 latas</span></div></div>
-  <div class="item"><div class="row"><span>Salsa de ostras</span><div class="line"></div><span>1 lata</span></div></div>
-  <div class="item"><div class="row"><span>Salsa hoisin</span><div class="line"></div><span>2 cucharadas</span></div></div>
-  <div class="item"><div class="row"><span>Kétchup / salsa de tomate</span><div class="line"></div><span>4 cucharadas</span></div></div>
-  <div class="item"><div class="row"><span>Kikkoman</span><div class="line"></div><span>1 porción</span></div></div>
-  <div class="item"><div class="row"><span>Salsa oscura de champiñón</span><div class="line"></div><span>2 cucharadas</span></div></div>
-  <div class="item"><div class="row"><span>Azúcar</span><div class="line"></div><span>2 tazas</span></div></div>
-  <div class="item"><div class="row"><span>MSG / Glutamato</span><div class="line"></div><span>4 cucharadas</span></div></div>
-  <div class="item"><div class="row"><span>Condimento de pollo</span><div class="line"></div><span>½ cucharada</span></div></div>
-  <div class="item"><div class="row"><span>Vino Shaoxing</span><div class="line"></div><span>3 cucharadas</span></div></div>
+<div class="col">
+  <h1 class="title-es">Salsa Kung Pao</h1>
+
+  <div class="item"><div class="row"><span class="name">Salsa de soja dorada</span><div class="line"></div><span class="qty">2 latas</span></div></div>
+  <div class="item"><div class="row"><span class="name">Salsa de ostras</span><div class="line"></div><span class="qty">1 lata</span></div></div>
+  <div class="item"><div class="row"><span class="name">Salsa hoisin</span><div class="line"></div><span class="qty">2 cucharadas</span></div></div>
+  <div class="item"><div class="row"><span class="name">Kétchup</span><div class="line"></div><span class="qty">4 cucharadas</span></div></div>
+  <div class="item"><div class="row"><span class="name">Kikkoman</span><div class="line"></div><span class="qty">1 porción</span></div></div>
+  <div class="item"><div class="row"><span class="name">Salsa oscura champiñón</span><div class="line"></div><span class="qty">2 cucharadas</span></div></div>
+  <div class="item"><div class="row"><span class="name">Azúcar</span><div class="line"></div><span class="qty">2 tazas</span></div></div>
+  <div class="item"><div class="row"><span class="name">MSG / Glutamato</span><div class="line"></div><span class="qty">4 cucharadas</span></div></div>
+  <div class="item"><div class="row"><span class="name">Condimento de pollo</span><div class="line"></div><span class="qty">1/2 cuch</span></div></div>
+  <div class="item"><div class="row"><span class="name">Vino Shaoxing</span><div class="line"></div><span class="qty">3 cucharadas</span></div></div>
+
 </div>
 </body>
 </html>
