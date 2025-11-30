@@ -11,32 +11,52 @@
         font-family: Arial, sans-serif;
         height: 100vh;
     }
-    .col {
+
+    /* ===== 左边中文 ===== */
+    .col-cn {
         width: 50%;
         padding: 40px;
-        font-size: 2.4rem;
+        font-size: 2.6rem;  /* 中文稍微大一点 */
     }
+
+    /* ===== 右边西班牙文 ===== */
+    .col-es {
+        width: 50%;
+        padding: 40px;
+        font-size: 2.2rem;   /* 西班牙文缩小一点 */
+        line-height: 1.3;
+    }
+
     h1 {
         text-align: center;
         margin-top: 0;
     }
     .item {
-        margin: 25px 0;
+        margin: 20px 0;
     }
+
     .row {
         display: flex;
         align-items: center;
         width: 100%;
     }
+
+    /* 左名称 */
     .row span:first-child {
         width: 28%;
-        min-width: 180px; /* 防止换行 */
+        min-width: 180px;
+        white-space: nowrap;
     }
+
+    /* 右用量 */
     .row span:last-child {
         width: 20%;
         min-width: 120px;
         text-align: right;
+        white-space: nowrap;
     }
+
+    /* 横线 */
     .line {
         flex: 1;
         border-bottom: 3px solid black;
@@ -46,8 +66,8 @@
 </head>
 <body>
 
-<!-- 中文 -->
-<div class="col">
+<!-- ===== 中文区 ===== -->
+<div class="col-cn">
   <h1>宫宝汁</h1>
   <div class="item"><div class="row"><span>金标酱油</span><div class="line"></div><span>2罐</span></div></div>
   <div class="item"><div class="row"><span>蚝油</span><div class="line"></div><span>1罐</span></div></div>
@@ -61,8 +81,8 @@
   <div class="item"><div class="row"><span>酒</span><div class="line"></div><span>3勺</span></div></div>
 </div>
 
-<!-- 西班牙文 -->
-<div class="col">
+<!-- ===== 西班牙文区 ===== -->
+<div class="col-es">
   <h1>Salsa Kung Pao</h1>
   <div class="item"><div class="row"><span>Salsa de soja dorada</span><div class="line"></div><span>2 latas</span></div></div>
   <div class="item"><div class="row"><span>Salsa de ostras</span><div class="line"></div><span>1 lata</span></div></div>
@@ -75,6 +95,5 @@
   <div class="item"><div class="row"><span>Condimento de pollo</span><div class="line"></div><span>½ cucharada</span></div></div>
   <div class="item"><div class="row"><span>Vino Shaoxing</span><div class="line"></div><span>3 cucharadas</span></div></div>
 </div>
-
 </body>
 </html>
