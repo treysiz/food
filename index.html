@@ -330,6 +330,274 @@
     </div>
 </div>
 </body>
+</html>    .column {
+        padding: 30px 40px;
+        overflow-y: auto;
+    }
+    
+    .column-zh {
+        background: linear-gradient(135deg, #f8f9ff 0%, #fef5ff 100%);
+    }
+    
+    .column-es {
+        background: linear-gradient(135deg, #fef5ff 0%, #f8f9ff 100%);
+    }
+    
+    .divider {
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .column-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid;
+        text-align: center;
+    }
+    
+    .column-zh .column-title {
+        color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .column-es .column-title {
+        color: #764ba2;
+        border-color: #764ba2;
+    }
+    
+    .ingredient-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    
+    .ingredient-item {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+    }
+    
+    .ingredient-item:hover {
+        transform: translateX(8px);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    }
+    
+    .column-zh .ingredient-item:hover {
+        border-color: #667eea;
+    }
+    
+    .column-es .ingredient-item:hover {
+        border-color: #764ba2;
+        transform: translateX(-8px);
+    }
+    
+    .ingredient-name {
+        font-size: 1.6rem;
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    
+    .ingredient-amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+    
+    .column-zh .ingredient-amount {
+        color: #667eea;
+    }
+    
+    .column-es .ingredient-amount {
+        color: #764ba2;
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .column-zh .ingredient-item {
+        animation: fadeInLeft 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .column-es .ingredient-item {
+        animation: fadeInRight 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .ingredient-item:nth-child(1) { animation-delay: 0.1s; }
+    .ingredient-item:nth-child(2) { animation-delay: 0.15s; }
+    .ingredient-item:nth-child(3) { animation-delay: 0.2s; }
+    .ingredient-item:nth-child(4) { animation-delay: 0.25s; }
+    .ingredient-item:nth-child(5) { animation-delay: 0.3s; }
+    .ingredient-item:nth-child(6) { animation-delay: 0.35s; }
+    .ingredient-item:nth-child(7) { animation-delay: 0.4s; }
+    .ingredient-item:nth-child(8) { animation-delay: 0.45s; }
+    .ingredient-item:nth-child(9) { animation-delay: 0.5s; }
+    .ingredient-item:nth-child(10) { animation-delay: 0.55s; }
+    
+    .footer {
+        text-align: center;
+        padding: 15px;
+        background: rgba(102, 126, 234, 0.05);
+        color: #718096;
+        font-size: 1.1rem;
+        border-top: 2px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    /* 隐藏滚动条但保持功能 */
+    .column::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .column::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .column::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.3);
+        border-radius: 4px;
+    }
+    
+    .column::-webkit-scrollbar-thumb:hover {
+        background: rgba(102, 126, 234, 0.5);
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>宫宝汁 | Salsa Kung Pao</h1>
+        <div class="subtitle">Kung Pao Sauce Recipe</div>
+    </div>
+    
+    <div class="main-content">
+        <!-- 左侧中文 -->
+        <div class="column column-zh">
+            <div class="column-title">中文配方</div>
+            <div class="ingredient-list">
+                <div class="ingredient-item">
+                    <div class="ingredient-name">金标酱油</div>
+                    <div class="ingredient-amount">2罐</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">蚝油</div>
+                    <div class="ingredient-amount">1罐</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">海鲜酱</div>
+                    <div class="ingredient-amount">2勺</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">番茄酱</div>
+                    <div class="ingredient-amount">4勺</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">万字</div>
+                    <div class="ingredient-amount">1 pot</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">草菇老抽</div>
+                    <div class="ingredient-amount">2勺</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">糖</div>
+                    <div class="ingredient-amount">2 pot</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">味精</div>
+                    <div class="ingredient-amount">4勺</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">鸡精</div>
+                    <div class="ingredient-amount">半勺</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">酒</div>
+                    <div class="ingredient-amount">3勺</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间分隔线 -->
+        <div class="divider"></div>
+        
+        <!-- 右侧西班牙文 -->
+        <div class="column column-es">
+            <div class="column-title">Receta en Español</div>
+            <div class="ingredient-list">
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Salsa de soja dorada</div>
+                    <div class="ingredient-amount">2 latas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Salsa de ostras</div>
+                    <div class="ingredient-amount">1 lata</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Salsa hoisin</div>
+                    <div class="ingredient-amount">2 cucharadas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Kétchup</div>
+                    <div class="ingredient-amount">4 cucharadas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Kikkoman</div>
+                    <div class="ingredient-amount">1 porción</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Salsa oscura champiñón</div>
+                    <div class="ingredient-amount">2 cucharadas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Azúcar</div>
+                    <div class="ingredient-amount">2 tazas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">MSG / Glutamato</div>
+                    <div class="ingredient-amount">4 cucharadas</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Condimento de pollo</div>
+                    <div class="ingredient-amount">1/2 cuch</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-name">Vino Shaoxing</div>
+                    <div class="ingredient-amount">3 cucharadas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        榕城自助餐 | Banyan City Restaurant
+    </div>
+</div>
+</body>
 </html>    
     .column-zh .column-title {
         color: #667eea;
