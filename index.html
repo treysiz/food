@@ -2,61 +2,249 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>宫宝汁 | Salsa Kung Pao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宫宝汁配方 | Kung Pao Sauce Recipe</title>
 <style>
-    body {
+    * {
         margin: 0;
-        font-family: Arial, sans-serif;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #fff;
-        height: 100vh;
+        padding: 20px;
     }
-
-    table {
-        width: 90%;
-        font-size: 2.2rem;
-        border-collapse: collapse;
+    
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 50px 60px;
+        backdrop-filter: blur(10px);
     }
-
-    th {
+    
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding-bottom: 30px;
+        border-bottom: 3px solid #667eea;
+    }
+    
+    .header h1 {
         font-size: 3.5rem;
-        padding-bottom: 20px;
+        color: #667eea;
+        margin-bottom: 15px;
+        font-weight: 700;
+        letter-spacing: -1px;
     }
-
-    td {
-        padding: 10px 15px;
-        white-space: nowrap;
+    
+    .header .subtitle {
+        font-size: 2.2rem;
+        color: #764ba2;
+        font-weight: 500;
+        font-style: italic;
     }
-
-    .col-left { text-align: right; width: 40%; }
-    .col-bar  { text-align: center; width: 5%; font-weight: bold; font-size: 2.5rem; }
-    .col-right{ text-align: left; width: 40%; }
-
+    
+    .recipe-grid {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .recipe-item {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        background: linear-gradient(135deg, #f8f9ff 0%, #faf6ff 100%);
+        padding: 25px 35px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+    }
+    
+    .recipe-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(102, 126, 234, 0.2);
+        border-color: #667eea;
+    }
+    
+    .ingredient-zh {
+        text-align: right;
+        font-size: 2rem;
+        color: #2d3748;
+        font-weight: 600;
+        padding-right: 30px;
+    }
+    
+    .divider {
+        font-size: 2.5rem;
+        color: #667eea;
+        font-weight: 300;
+        padding: 0 20px;
+        opacity: 0.5;
+    }
+    
+    .ingredient-es {
+        text-align: left;
+        font-size: 1.9rem;
+        color: #4a5568;
+        font-weight: 500;
+        padding-left: 30px;
+    }
+    
+    .amount {
+        color: #764ba2;
+        font-weight: 700;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 30px 25px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .header .subtitle {
+            font-size: 1.6rem;
+        }
+        
+        .recipe-item {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .ingredient-zh,
+        .ingredient-es {
+            text-align: center;
+            padding: 0;
+            font-size: 1.6rem;
+        }
+        
+        .divider {
+            display: none;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .recipe-item {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .recipe-item:nth-child(1) { animation-delay: 0.1s; }
+    .recipe-item:nth-child(2) { animation-delay: 0.15s; }
+    .recipe-item:nth-child(3) { animation-delay: 0.2s; }
+    .recipe-item:nth-child(4) { animation-delay: 0.25s; }
+    .recipe-item:nth-child(5) { animation-delay: 0.3s; }
+    .recipe-item:nth-child(6) { animation-delay: 0.35s; }
+    .recipe-item:nth-child(7) { animation-delay: 0.4s; }
+    .recipe-item:nth-child(8) { animation-delay: 0.45s; }
+    .recipe-item:nth-child(9) { animation-delay: 0.5s; }
+    .recipe-item:nth-child(10) { animation-delay: 0.55s; }
+    
+    .footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #e2e8f0;
+        color: #718096;
+        font-size: 1.4rem;
+    }
 </style>
 </head>
 <body>
-
-<table>
-    <tr>
-        <th class="col-left">宫宝汁</th>
-        <th class="col-bar">|</th>
-        <th class="col-right">Salsa Kung Pao</th>
-    </tr>
-
-    <tr><td class="col-left">金标酱油 — 2罐</td>      <td class="col-bar">|</td> <td class="col-right">Salsa de soja dorada — 2 latas</td></tr>
-    <tr><td class="col-left">蚝油 — 1罐</td>          <td class="col-bar">|</td> <td class="col-right">Salsa de ostras — 1 lata</td></tr>
-    <tr><td class="col-left">海鲜酱 — 2勺</td>        <td class="col-bar">|</td> <td class="col-right">Salsa hoisin — 2 cucharadas</td></tr>
-    <tr><td class="col-left">番茄酱 — 4勺</td>        <td class="col-bar">|</td> <td class="col-right">Kétchup — 4 cucharadas</td></tr>
-    <tr><td class="col-left">万字 — 1 pot</td>       <td class="col-bar">|</td> <td class="col-right">Kikkoman — 1 porción</td></tr>
-    <tr><td class="col-left">草菇老抽 — 2勺</td>      <td class="col-bar">|</td> <td class="col-right">Salsa oscura champiñón — 2 cucharadas</td></tr>
-    <tr><td class="col-left">糖 — 2 pot</td>         <td class="col-bar">|</td> <td class="col-right">Azúcar — 2 tazas</td></tr>
-    <tr><td class="col-left">味精 — 4勺</td>         <td class="col-bar">|</td> <td class="col-right">MSG / Glutamato — 4 cucharadas</td></tr>
-    <tr><td class="col-left">鸡精 — 半勺</td>        <td class="col-bar">|</td> <td class="col-right">Condimento de pollo — 1/2 cuch</td></tr>
-    <tr><td class="col-left">酒 — 3勺</td>           <td class="col-bar">|</td> <td class="col-right">Vino Shaoxing — 3 cucharadas</td></tr>
-
-</table>
-
+<div class="container">
+    <div class="header">
+        <h1>宫宝汁</h1>
+        <div class="subtitle">Salsa Kung Pao</div>
+    </div>
+    
+    <div class="recipe-grid">
+        <div class="recipe-item">
+            <div class="ingredient-zh">金标酱油 <span class="amount">— 2罐</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Salsa de soja dorada <span class="amount">— 2 latas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">蚝油 <span class="amount">— 1罐</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Salsa de ostras <span class="amount">— 1 lata</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">海鲜酱 <span class="amount">— 2勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Salsa hoisin <span class="amount">— 2 cucharadas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">番茄酱 <span class="amount">— 4勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Kétchup <span class="amount">— 4 cucharadas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">万字 <span class="amount">— 1 pot</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Kikkoman <span class="amount">— 1 porción</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">草菇老抽 <span class="amount">— 2勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Salsa oscura champiñón <span class="amount">— 2 cucharadas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">糖 <span class="amount">— 2 pot</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Azúcar <span class="amount">— 2 tazas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">味精 <span class="amount">— 4勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">MSG / Glutamato <span class="amount">— 4 cucharadas</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">鸡精 <span class="amount">— 半勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Condimento de pollo <span class="amount">— 1/2 cuch</span></div>
+        </div>
+        
+        <div class="recipe-item">
+            <div class="ingredient-zh">酒 <span class="amount">— 3勺</span></div>
+            <div class="divider">|</div>
+            <div class="ingredient-es">Vino Shaoxing <span class="amount">— 3 cucharadas</span></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        榕城自助餐 | Banyan City Restaurant
+    </div>
+</div>
 </body>
 </html>
