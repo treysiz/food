@@ -8,49 +8,63 @@
 <style>
     body {
         margin: 0;
-        font-family: Arial, sans-serif;
+        padding: 0;
+        background: #ffffff;
+        font-family: "Arial", sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background: white;
     }
 
     table {
-        width: 95%;
+        width: 90%;
         font-size: 2.4rem;
-        border-collapse: separate;
-        border-spacing: 0 18px;   /* 行距 */
+        border-collapse: collapse;
     }
 
-    th { font-size: 3.5rem; padding: 20px 0; }
-    td { white-space: nowrap; padding: 8px 15px; }
+    th {
+        font-size: 3.8rem;
+        padding-bottom: 30px;
+    }
 
-    .line { border-bottom: 3px solid black; width: 100%; display: inline-block; }
-    .center { text-align: center; }
-    .split { font-weight: bold; font-size: 2rem; color: #555; }
+    td {
+        padding: 10px 15px;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .line {
+        border-bottom: 3px solid black;
+        width: 100%;
+        display: inline-block;
+    }
+
+    .col-left  { text-align: right;  width: 33%; }
+    .col-mid   { width: 34%; }
+    .col-right { text-align: left;  width: 33%; }
 </style>
 </head>
-<body>
 
+<body>
 <table>
     <tr>
-        <th>宫宝汁</th>
-        <th class="center split">|</th>
-        <th>Salsa Kung Pao</th>
+        <th class="col-left">宫宝汁</th>
+        <th class="col-mid"></th>
+        <th class="col-right">Salsa Kung Pao</th>
     </tr>
 
-    <tr><td>金标酱油 <span class="line"></span> 2罐</td>   <td class="center split">|</td> <td>Salsa de soja dorada <span class="line"></span> 2 latas</td></tr>
-    <tr><td>蚝油 <span class="line"></span> 1罐</td>         <td class="center split">|</td> <td>Salsa de ostras <span class="line"></span> 1 lata</td></tr>
-    <tr><td>海鲜酱 <span class="line"></span> 2勺</td>       <td class="center split">|</td> <td>Salsa hoisin <span class="line"></span> 2 cucharadas</td></tr>
-    <tr><td>番茄酱 <span class="line"></span> 4勺</td>       <td class="center split">|</td> <td>Kétchup <span class="line"></span> 4 cucharadas</td></tr>
-    <tr><td>万字 <span class="line"></span> 1pot</td>        <td class="center split">|</td> <td>Kikkoman <span class="line"></span> 1 porción</td></tr>
-    <tr><td>草菇老抽 <span class="line"></span> 2勺</td>    <td class="center split">|</td> <td>Salsa oscura champiñón <span class="line"></span> 2 cucharadas</td></tr>
-    <tr><td>糖 <span class="line"></span> 2pot</td>          <td class="center split">|</td> <td>Azúcar <span class="line"></span> 2 tazas</td></tr>
-    <tr><td>味精 <span class="line"></span> 4勺</td>         <td class="center split">|</td> <td>MSG / Glutamato <span class="line"></span> 4 cucharadas</td></tr>
-    <tr><td>鸡精 <span class="line"></span> 半勺</td>       <td class="center split">|</td> <td>Condimento de pollo <span class="line"></span> 1/2 cuch</td></tr>
-    <tr><td>酒 <span class="line"></span> 3勺</td>           <td class="center split">|</td> <td>Vino Shaoxing <span class="line"></span> 3 cucharadas</td></tr>
-</table>
+    <tr><td class="col-left">金标酱油</td> <td class="col-mid"><span class="line"></span>2罐</td> <td class="col-right">Salsa de soja dorada — 2 latas</td></tr>
+    <tr><td class="col-left">蚝油</td>     <td class="col-mid"><span class="line"></span>1罐</td> <td class="col-right">Salsa de ostras — 1 lata</td></tr>
+    <tr><td class="col-left">海鲜酱</td>   <td class="col-mid"><span class="line"></span>2勺</td> <td class="col-right">Salsa hoisin — 2 cucharadas</td></tr>
+    <tr><td class="col-left">番茄酱</td>   <td class="col-mid"><span class="line"></span>4勺</td> <td class="col-right">Kétchup — 4 cucharadas</td></tr>
+    <tr><td class="col-left">万字</td>     <td class="col-mid"><span class="line"></span>1pot</td><td class="col-right">Kikkoman — 1 porción</td></tr>
+    <tr><td class="col-left">草菇老抽</td> <td class="col-mid"><span class="line"></span>2勺</td> <td class="col-right">Salsa oscura champiñón — 2 cucharadas</td></tr>
+    <tr><td class="col-left">糖</td>       <td class="col-mid"><span class="line"></span>2pot</td><td class="col-right">Azúcar — 2 tazas</td></tr>
+    <tr><td class="col-left">味精</td>     <td class="col-mid"><span class="line"></span>4勺</td> <td class="col-right">MSG / Glutamato — 4 cucharadas</td></tr>
+    <tr><td class="col-left">鸡精</td>     <td class="col-mid"><span class="line"></span>半勺</td><td class="col-right">Condimento de pollo — 1/2 cuch</td></tr>
+    <tr><td class="col-left">酒</td>       <td class="col-mid"><span class="line"></span>3勺</td> <td class="col-right">Vino Shaoxing — 3 cucharadas</td></tr>
 
+</table>
 </body>
 </html>
